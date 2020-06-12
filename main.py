@@ -45,8 +45,7 @@ class Contact(object):
             missing = (attr_fields[i].name for i, v in enumerate(attr_values)
                        if v is None)
             missing_enum = ', '.join(f"'{field}'" for field in missing)
-            msg = (r'row_indices_by_attr missing entries '
-                   f'for fields {missing_enum}')
+            msg = f'schema missing entries for fields {missing_enum}'
             raise ValueError(msg)
         return cls(*attr_values)
 
