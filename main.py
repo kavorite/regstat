@@ -8,6 +8,10 @@ import dataclasses
 from datetime import date
 
 
+class SchemaError(ValueError):
+    pass
+
+
 @dataclasses.dataclass
 class Contact(object):
     surname: str
@@ -34,7 +38,7 @@ class Contact(object):
         attr_values = [None for i in range(len(attr_indices))]
         for attr, index in schema.items():
             if attr not in attr_indices:
-                raise ValueError('invalid field')
+                raise SchemaError('invalid field')
             cell = row[index]
             if attr == 'dob':
                 month, day, year = map(int, cell.split('/', 3))
@@ -46,7 +50,7 @@ class Contact(object):
                        if v is None)
             missing_enum = ', '.join(f"'{field}'" for field in missing)
             msg = f'schema missing entries for fields {missing_enum}'
-            raise ValueError(msg)
+            raise SchemaError(msg)
         return cls(*attr_values)
 
     async def status(self, session):
@@ -88,12 +92,11 @@ async def main(records, steno):
     async def write_status_annotated(record, ostrm, session):
         try:
             contact = Contact.from_row(record, schema)
-        except ValueError:
+        except SchemaError:
             return
         stat = await contact.status(session)
         record += stat
         ostrm.writerow(record)
-
 
     from tqdm import tqdm
     max_in_flight = 128
