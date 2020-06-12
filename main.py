@@ -8,7 +8,7 @@ import dataclasses
 from datetime import date
 
 
-class SchemaError(ValueError):
+class SchemaError(Exception):
     pass
 
 
@@ -92,7 +92,7 @@ async def main(records, steno):
     async def write_status_annotated(record, ostrm, session):
         try:
             contact = Contact.from_row(record, schema)
-        except SchemaError:
+        except ValueError:
             return
         stat = await contact.status(session)
         record += stat
