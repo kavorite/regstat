@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	gq "github.com/PuerkitoBio/goquery"
+	gq "gopkg.in/goquery.v1"
 )
 
 type DOB struct {
